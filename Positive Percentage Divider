@@ -1,0 +1,80 @@
+from yahoo_fin.stock_info import get_data
+import numpy as np
+import pandas as pd
+import re
+from datetime import date
+import itertools
+import tensorflow as tf
+import os
+import cv2
+import matplotlib.pyplot as plt
+
+# historical data range
+start = '01/01/2010'
+end = '01/01/2020'
+
+# creates a dataframe that has the positive and negative percent changes in stock price per day (only for positive)
+def percentagedivider_pos(ticker, start, end):
+    data = get_data(ticker, start_date= start, end_date= end)                                         # extracting basic data from yahoo finance
+    
+    dates = list(data.index)                                                                          # turning the index of dates into a list
+
+    date1 = []                                                                                        # empty list to fill with dates
+    for x in dates:
+        date1.append(x.date())
+
+# setting each variable of the list to its own list
+    open1 = data['open']
+    close1 = data['close']
+    high1 = data['high']
+    low1 = data['low']
+    volume1 = data['volume']
+ 
+# creating dataset
+    d1 =  {'Date': date1,
+      'Open': open1,
+      'Close': close1,
+      'High': high1,
+      'Low' : low1,
+      'Volume' : volume1
+      }
+
+# creating dataframe with dates as a column
+    odf = pd.DataFrame (d1, columns = ['Date', 'Open', 'Close', 'High', 'Low', 'Volume'])
+    
+    perchange = []                                                                                 # empty list for the percent changes
+    for o,c,d in zip(odf['Open'], odf['Close'], odf['Date']):                
+        pchange = ( ( o - c ) / o ) * 100 
+        perchange.append(round(pchange, 3))
+
+# creating empty lists to divide the percentages by positive and negative
+    negperchange = []
+    posperchange = []
+    negdate = []
+    posdate = []
+    
+# looping through the percentages and separating them
+    for p, d in zip(perchange, odf['Date']):
+         if p > 0:
+           posperchange.append(p)
+           posdate.append(d)
+         if p < 0:
+           negperchange.append(p)
+           negdate.append(d)
+
+# creating a dataset for the positive dataframe
+    posd2 = {'%Change' : posperchange,
+             'Date' : posdate
+            }
+
+# creating a dataset for the negative dataframe
+    negd3 = {'%Change' : negperchange,
+             'Date' : negdate
+            }
+
+# creating dataframes
+    posdf = pd.DataFrame (posd2, columns = ['Date', '%Change'])
+    negdf = pd.DataFrame (negd3, columns = ['Date', '%Change'])
+
+# only returns positive dataframe
+    return posdf
