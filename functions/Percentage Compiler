@@ -1,0 +1,35 @@
+from yahoo_fin.stock_info import get_data
+import numpy as np
+import pandas as pd
+import re
+from datetime import date
+import itertools
+import tensorflow as tf
+import os
+import cv2
+import matplotlib.pyplot as plt
+
+def dayupdown(ticker, start, end):                               
+    data = get_data(ticker, start_date= start, end_date= end)
+    dates = list(data.index)
+
+    perpos = percentagedivider_pos(ticker, start, end)
+    perneg = percentagedivider_neg(ticker, start, end)
+
+    val = []
+    dates1 = []
+    for x in dates:
+        for a, b, a1, b1 in zip(perneg['%Change'], perpos['%Change'], perneg['Date'], perpos['Date']):
+            if x == a1:
+                val.append(int(1))
+                dates1.append(a1)
+            if x == b1:
+                val.append(int(0))
+                dates1.append(b1)
+    d1 = {'Date': dates1,
+          'PosNeg': val,
+         }
+
+    pndf = pd.DataFrame (d1, columns = ['Date', 'PosNeg']).set_index('Date')
+
+    return pndf           #pull dates from this, # 0 = Positive , 1 = Negative
