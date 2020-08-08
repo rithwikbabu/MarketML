@@ -1,0 +1,15 @@
+#importing packages
+from yahoo_fin.stock_info import get_day_losers  
+import pandas as pd
+
+# assigning variable to dataframe
+df = get_day_losers()
+
+#converting dataframe to csv
+df.to_csv('day_losers.csv', encoding='utf-8')
+
+#assigning csv to a variable
+read_file = pd.read_csv('day_losers.csv')
+
+#converting csv to excel
+read_file.to_excel(r'day_losers.xlsx', index = None, header = True)
