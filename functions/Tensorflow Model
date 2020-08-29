@@ -1,0 +1,25 @@
+from yahoo_fin.stock_info import get_data
+import numpy as np
+import pandas as pd
+import re
+from datetime import date
+import itertools
+import tensorflow as tf
+import os
+import cv2
+import matplotlib.pyplot as plt
+
+# creating tensorflow model
+def get_compiled_model():
+  model = tf.keras.Sequential([
+    tf.keras.layers.Dense(10, activation='relu'),
+    tf.keras.layers.Dense(10, activation='relu'),
+    tf.keras.layers.Dropout(.5, input_shape=(2,)),
+    tf.keras.layers.Dense(1)
+  ])
+
+# compiling model
+  model.compile(optimizer='adam',
+                loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+                metrics=['accuracy'])
+  return model
