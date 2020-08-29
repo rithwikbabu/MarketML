@@ -1,0 +1,32 @@
+from yahoo_fin.stock_info import get_data
+import numpy as np
+import pandas as pd
+import re
+from datetime import date
+import itertools
+import tensorflow as tf
+import os
+import cv2
+import matplotlib.pyplot as plt
+
+# historical data range
+start = '01/01/2010'
+end = '01/01/2020'
+
+# creates a dataframe that has the neccessary data for the tensorflow model
+def tfdfmaker(ticker, start, end):
+    vol = stockvolume(ticker, start, end)['Volume']
+    pri = stockprice(ticker, start, end)['Price']
+    mav55 = movingaverage(ticker, 55, start, end)['Mav']
+    mav20 = movingaverage(ticker, 200, start, end)['Mav']
+    chng = dayupdown(ticker, start, end)['PosNeg']
+    d1 =  {'Price': pri,
+           'Volume': vol,
+           'Mav55': mav55,
+           'Mav20': mav20,
+           'Change': chng
+          }
+
+    tfdf = pd.DataFrame (d1, columns = ['Price', 'Volume', 'Mav55', 'Mav20', 'Change'])
+
+    return tfdf[start:]
