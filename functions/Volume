@@ -1,0 +1,41 @@
+from yahoo_fin.stock_info import get_data
+import numpy as np
+import pandas as pd
+import re
+from datetime import date
+import itertools
+import tensorflow as tf
+import os
+import cv2
+import matplotlib.pyplot as plt
+
+# historical data range
+start = '01/01/2010'
+end = '01/01/2020'
+
+# creates a dataframe that has the stocks volume per day
+def stockvolume(ticker, start, end):
+    data = get_data(ticker, start_date= start, end_date= end)                                         # extracting basic data from yahoo finance
+    
+    dates = list(data.index)                                                                          # turning the index of dates into a list
+
+    date1 = []                                                                                        # empty list to fill with dates
+    for x in dates:
+        date1.append(x.date())
+
+# setting each variable of the list to its own list
+    open1 = data['open']
+    close1 = data['close']
+    high1 = data['high']
+    low1 = data['low']
+    volume1 = data['volume']
+
+# creating dataset
+    d1 =  {'Date': date1,
+           'Volume': volume1
+          }
+          
+# creating dataframe
+    vdf = pd.DataFrame (d1, columns = ['Date', 'Volume'])
+
+    return vdf
